@@ -6,32 +6,34 @@ jvm.import = (function(w, d, $){
 	};
 
 	var Xml = function(){
-
+		this.data = 'Hello World';
 	};
+	Xml.staticData = null;
 
 	Xml.prototype = {
 		getNode:function(paramNodeName){
 			var node = null;
 			return node;
 		},
-		getResponse:function(paramUrl){
+		getResponse:function(paramUrl, paramThat){
+			var that = paramThat;
 			var req = $.ajax({
 				url:paramUrl,
-				context:d.body,
+				context:that
 			});
 			req.done(
-				function(data){
-					$('#container').triggerHandler('data:retrieved', [data]);
+				function(paramData){
+					var hash = {that:this, data:paramData};
+					$('#container').triggerHandler('data:retrieved', [hash]);
 				}
 			);
 		},
-		saveResponse:function(){
-			
+		saveResponse:function(paramsThat, paramsData){
+			paramsThat.data = paramsData;
+			Xml.staticData = paramsData;
 		},
-		listener:function(e, paramData){
-			console.group();
-				console.log('Reached Event listener paramData:\t', paramData);
-			console.groupEnd();	
+		listener:function(e, params){			
+			params.that.saveResponse(params.that, params.data);
 		}		
 	};
 
@@ -43,8 +45,22 @@ jvm.import = (function(w, d, $){
 		
 		$(function(){ // wait for DOM
 			$('#container').on('data:retrieved', objXml.listener);
-			objXml.getResponse('../pageMiddleRow0/index.xml');
+			objXml.getResponse('../pageMiddleRow0/index.xml', objXml);
 		});
+
+		var lclInterval = w.setInterval(function(){
+			console.group('INTERVAL');
+				console.log('interval running');
+			console.groupEnd();	
+
+			if( !!Xml.staticData ){
+				w.clearInterval(lclInterval);
+				console.group('INTERVAL CLEAR');
+					console.log('cleared Xml.staticData:\t', Xml.staticData);
+				console.groupEnd();	
+			}
+
+		}, 333);
 
 	})();
 
