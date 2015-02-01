@@ -6,13 +6,14 @@ jvm.import = (function(w, d, $){
 	};
 
 	var Xml = function(){
-		this.data = 'Hello World';
 	};
+
 	Xml.staticData = null;
 
 	Xml.prototype = {
 		getNode:function(paramNodeName){
 			var node = null;
+			node = Xml.staticData.getElementsByTagName(paramNodeName)[0];
 			return node;
 		},
 		getResponse:function(paramUrl, paramThat){
@@ -29,7 +30,6 @@ jvm.import = (function(w, d, $){
 			);
 		},
 		saveResponse:function(paramsThat, paramsData){
-			paramsThat.data = paramsData;
 			Xml.staticData = paramsData;
 		},
 		listener:function(e, params){			
@@ -49,14 +49,14 @@ jvm.import = (function(w, d, $){
 		});
 
 		var lclInterval = w.setInterval(function(){
-			console.group('INTERVAL');
-				console.log('interval running');
-			console.groupEnd();	
 
+			// TODO: simply call a method. Let the method setInterval and look for static data
+			// TODO: the method should be named appendDom
 			if( !!Xml.staticData ){
 				w.clearInterval(lclInterval);
-				console.group('INTERVAL CLEAR');
-					console.log('cleared Xml.staticData:\t', Xml.staticData);
+				var xmlNode = objXml.getNode('fragment');
+				console.group('CLEAR INTERVAL');
+					console.log('xmlNode:\t', xmlNode);
 				console.groupEnd();	
 			}
 
