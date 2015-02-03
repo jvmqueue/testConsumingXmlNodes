@@ -93,6 +93,21 @@ jvm.import = (function(w, d, $){
 		build:function(){
 
 			// TODO: use our Html privalged methods to build an HTML fragment from XML
+			var frag = this.getHtmlFrag();
+			var fragmentToAppend = d.createDocumentFragment();
+			$(frag.childNodes).each(function(index, elm){
+				if(this.nodeType == 1){
+					var node = d.createElement(this.nodeName);
+					node.setAttribute('class', this.getAttribute('class'));
+					$(this.childNodes).each(function(index, elm){
+						if(this.nodeType == 1){
+							console.group('BUILD');
+								console.log('this.nodeName:\t', this.nodeName);
+							console.groupEnd();	
+						}
+					});	
+				}
+			});
 		}
 	};
 
@@ -104,8 +119,10 @@ jvm.import = (function(w, d, $){
 		
 		$(function(){ // wait for DOM
 			$('#container').on('data:retrieved', objXml.listener); // define listener now, use it latter
+
 			// TODO: need to be able to couple with different data, XML Fragments
 			// TODO: let the XML fragment define the HTML section which it is to be appended
+			// TODO: should be able to reuse the above listener. Simply invoke objXml.getResponse with differnt URL
 			objXml.getResponse('../pageMiddleRow0/index.xml', objXml);
 		});
 
