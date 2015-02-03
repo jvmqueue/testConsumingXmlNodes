@@ -73,10 +73,7 @@ jvm.import = (function(w, d, $){
 		};
 		this.getHtmlIdToAppend = function(){
 			return htmlIdToAppend;
-		};		
-		this.appendToDom = function(){
-
-		};		
+		};
 	};
 	Html.prototype = {
 		append:function(paramFrag){ // paramFrag must pass Interface test
@@ -90,24 +87,42 @@ jvm.import = (function(w, d, $){
 			this.build();
 			
 		},
-		build:function(){
+		appendToAParent:function(paramFragRemainder, paramNode){ // TODO: should be recursive. If no children return, else call itself
+			var node = paramNode
+			var fragXmlRemainder = paramFragRemainder;
+			var nodeNew = null;
+			var nodeText = null;
 
+			$(fragXmlRemainder.childNodes).each(function(index, elm){
+				if(this.nodeType == 1){
+					nodeNew = d.createElement(this.nodeName);
+					nodeText = d.createTextNode(this.firstChild.nodeValue);
+					nodeNew.appendChild(nodeText);
+					node.appendChild(nodeNew);
+				}
+			});			
+		},
+		build:function(){
+			var that = this; // scoping
+			var node = null;
 			// TODO: use our Html privalged methods to build an HTML fragment from XML
 			var frag = this.getHtmlFrag();
 			var fragmentToAppend = d.createDocumentFragment();
 			$(frag.childNodes).each(function(index, elm){
 				if(this.nodeType == 1){
-					var node = d.createElement(this.nodeName);
+					node = d.createElement(this.nodeName);
 					node.setAttribute('class', this.getAttribute('class'));
-					$(this.childNodes).each(function(index, elm){
-						if(this.nodeType == 1){
-							console.group('BUILD');
-								console.log('this.nodeName:\t', this.nodeName);
-							console.groupEnd();	
-						}
-					});	
+					// TODO: test if has children, append children to node
+					that.appendToAParent(this, node);
+
 				}
+				
 			});
+			fragmentToAppend.appendChild(node);
+			var nodeExist = d.getElementById('container');
+			nodeExist.appendChild(fragmentToAppend);
+
+
 		}
 	};
 
