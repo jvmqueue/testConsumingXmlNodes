@@ -44,27 +44,65 @@ jvm.import = (function(w, d, $){
 		};
 	};
 	Fragment.prototype = {
-		getNode:function(){
-			var frag = this.getFragment();
-			console.group('GET NODE');
-				console.log('frag:\t', frag);
-			console.groupEnd();	
+		getNode:function(paramNodeName){
+			var frag = this.getFragment(); // access private variable through public method
+			var nodeName = paramNodeName;
+			var node = frag.getElementsByTagName(nodeName)[0];
+			return node;
 		},
 		getNodeName:function(){},
-		getAttribute:function(){},
+		getAttributeValue:function(paramNode, paramAttribute){
+			return paramNode.getAttribute(paramAttribute);
+		},
 		getText:function(){}
 	};
 
 	var Html = function(){
+		var htmlFrag = null;
+		var htmlIdToAppend = null;
+		this.setHtmlFrag = function(paramFrag){
+			htmlFrag = paramFrag;
+		};
+		this.getHtmlFrag = function(){
+			return htmlFrag;
+		};
+		this.setHtmlIdToAppend = function(){
+			console.group('SET HTML ID TO APPEND');
+				console.log('Reached');
+			console.groupEnd();	
+			htmlIdToAppend = this.getHtmlFrag().getAttribute('appendTo');
+			console.group('SET HTML ID TO APPEND');
+				console.log('htmlIdToAppend:\t', htmlIdToAppend);
+			console.groupEnd();	
+		};
+		this.getHtmlIdToAppend = function(){
+			return htmlIdToAppend;
+		};		
+		this.appendToDom = function(){
 
+		};		
 	};
 	Html.prototype = {
 		append:function(paramFrag){ // paramFrag must pass Interface test
-			var interfaceFrag = new jvm.Interface('interfaceFrag', ['getNode', 'getNodeName', 'getAttribute', 'getText']);
+			var interfaceFrag = new jvm.Interface('interfaceFrag', ['getNode', 'getNodeName', 'getAttributeValue', 'getText']);
 			var objFragment = paramFrag;
-			jvm.Interface.ensureImplements(objFragment, interfaceFrag);
-			objFragment.getNode(); // TODO: getNode from which fragment. Fragment class needs access to an XML frag
 
+			console.group('APPEND');
+				console.log('Reached');
+			console.groupEnd();	
+
+			jvm.Interface.ensureImplements(objFragment, interfaceFrag);
+			var frag = objFragment.getNode('fragment'); // TODO: getNode from which fragment. Fragment class needs access to an XML frag
+			this.setHtmlFrag(frag);
+			this.setHtmlIdToAppend();
+			this.build();
+			
+		},
+		build:function(){
+
+			console.group('BUILD');
+				console.log('Reached');
+			console.groupEnd();	
 		}
 	};
 
@@ -85,11 +123,12 @@ jvm.import = (function(w, d, $){
 
 			// TODO: simply call a method. Let the method setInterval and look for static data
 			// TODO: the method should be named appendDom
-
 			if( !!Xml.staticData ){
 				w.clearInterval(lclInterval);
+
 				// TODO: once XML retrieved, simply let the HtmlBuilder update the DOM
-				var xmlNode = objXml.getNode('fragment');
+				var xmlNode = objXml.getNode('fragments');
+
 
 				var objFragment = new Fragment(xmlNode); // fragment object, always takes XML as parameter. Fragment performs tasks on XML fragments
 				var objHtml = new Html(); // html object
