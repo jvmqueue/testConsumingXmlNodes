@@ -37,11 +37,19 @@ jvm.import = (function(w, d, $){
 		}		
 	};
 
-	var Fragment = function(){
-
+	var Fragment = function(paramFragment){
+		var frag = paramFragment;
+		this.getFragment = function(){ // friendly, has public scope with access to private members
+			return frag;
+		};
 	};
 	Fragment.prototype = {
-		getNode:function(){},
+		getNode:function(){
+			var frag = this.getFragment();
+			console.group('GET NODE');
+				console.log('frag:\t', frag);
+			console.groupEnd();	
+		},
 		getNodeName:function(){},
 		getAttribute:function(){},
 		getText:function(){}
@@ -51,10 +59,11 @@ jvm.import = (function(w, d, $){
 
 	};
 	Html.prototype = {
-		append:function(paramFrag){
+		append:function(paramFrag){ // paramFrag must pass Interface test
 			var interfaceFrag = new jvm.Interface('interfaceFrag', ['getNode', 'getNodeName', 'getAttribute', 'getText']);
 			var objFragment = paramFrag;
 			jvm.Interface.ensureImplements(objFragment, interfaceFrag);
+			objFragment.getNode(); // TODO: getNode from which fragment. Fragment class needs access to an XML frag
 
 		}
 	};
@@ -82,7 +91,7 @@ jvm.import = (function(w, d, $){
 				// TODO: once XML retrieved, simply let the HtmlBuilder update the DOM
 				var xmlNode = objXml.getNode('fragment');
 
-				var objFragment = new Fragment(); // fragment object
+				var objFragment = new Fragment(xmlNode); // fragment object, always takes XML as parameter. Fragment performs tasks on XML fragments
 				var objHtml = new Html(); // html object
 
 				objHtml.append(objFragment); // pass fragment to append, let append verify fragment's interface
