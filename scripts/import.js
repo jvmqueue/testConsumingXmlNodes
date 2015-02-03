@@ -67,13 +67,9 @@ jvm.import = (function(w, d, $){
 			return htmlFrag;
 		};
 		this.setHtmlIdToAppend = function(){
-			console.group('SET HTML ID TO APPEND');
-				console.log('Reached');
-			console.groupEnd();	
+
 			htmlIdToAppend = this.getHtmlFrag().getAttribute('appendTo');
-			console.group('SET HTML ID TO APPEND');
-				console.log('htmlIdToAppend:\t', htmlIdToAppend);
-			console.groupEnd();	
+
 		};
 		this.getHtmlIdToAppend = function(){
 			return htmlIdToAppend;
@@ -87,10 +83,6 @@ jvm.import = (function(w, d, $){
 			var interfaceFrag = new jvm.Interface('interfaceFrag', ['getNode', 'getNodeName', 'getAttributeValue', 'getText']);
 			var objFragment = paramFrag;
 
-			console.group('APPEND');
-				console.log('Reached');
-			console.groupEnd();	
-
 			jvm.Interface.ensureImplements(objFragment, interfaceFrag);
 			var frag = objFragment.getNode('fragment'); // TODO: getNode from which fragment. Fragment class needs access to an XML frag
 			this.setHtmlFrag(frag);
@@ -100,9 +92,7 @@ jvm.import = (function(w, d, $){
 		},
 		build:function(){
 
-			console.group('BUILD');
-				console.log('Reached');
-			console.groupEnd();	
+			// TODO: use our Html privalged methods to build an HTML fragment from XML
 		}
 	};
 
