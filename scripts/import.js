@@ -8,7 +8,7 @@ jvm.import = (function(w, d, $){
 	var Xml = function(){
 	};
 
-	Xml.staticData = null;
+	Xml.staticData = null; // Allows access to XML fragments outside of Xml instance
 
 	Xml.prototype = {
 		getNode:function(paramNodeName){
@@ -37,6 +37,28 @@ jvm.import = (function(w, d, $){
 		}		
 	};
 
+	var Fragment = function(){
+
+	};
+	Fragment.prototype = {
+		getNode:function(){},
+		getNodeName:function(){},
+		getAttribute:function(){},
+		getText:function(){}
+	};
+
+	var Html = function(){
+
+	};
+	Html.prototype = {
+		append:function(paramFrag){
+			var interfaceFrag = new jvm.Interface('interfaceFrag', ['getNode', 'getNodeName', 'getAttribute', 'getText']);
+			var objFragment = paramFrag;
+			jvm.Interface.ensureImplements(objFragment, interfaceFrag);
+
+		}
+	};
+
 
 
 	// main page init entry point
@@ -44,7 +66,9 @@ jvm.import = (function(w, d, $){
 		var objXml = new Xml();
 		
 		$(function(){ // wait for DOM
-			$('#container').on('data:retrieved', objXml.listener);
+			$('#container').on('data:retrieved', objXml.listener); // define listener now, use it latter
+			// TODO: need to be able to couple with different data, XML Fragments
+			// TODO: let the XML fragment define the HTML section which it is to be appended
 			objXml.getResponse('../pageMiddleRow0/index.xml', objXml);
 		});
 
@@ -52,12 +76,17 @@ jvm.import = (function(w, d, $){
 
 			// TODO: simply call a method. Let the method setInterval and look for static data
 			// TODO: the method should be named appendDom
+
 			if( !!Xml.staticData ){
 				w.clearInterval(lclInterval);
+				// TODO: once XML retrieved, simply let the HtmlBuilder update the DOM
 				var xmlNode = objXml.getNode('fragment');
-				console.group('CLEAR INTERVAL');
-					console.log('xmlNode:\t', xmlNode);
-				console.groupEnd();	
+
+				var objFragment = new Fragment(); // fragment object
+				var objHtml = new Html(); // html object
+
+				objHtml.append(objFragment); // pass fragment to append, let append verify fragment's interface
+
 			}
 
 		}, 333);
