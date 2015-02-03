@@ -1,5 +1,5 @@
 var jvm = jvm || {};
-jvm.import = (function(w, d, $){
+jvm['import'] = (function(w, d, $){ // use associative array notation, because IE8 complains 
 
 	var Page = function(paramXmlObject){
 
