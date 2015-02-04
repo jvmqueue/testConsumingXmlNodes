@@ -89,6 +89,29 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 			this.build();
 			
 		},
+		parseChildren:function(paramFragRemainder, paramNodeFromDocFrag){
+			var that = this;
+			var node = null;
+
+
+			if( (!!paramFragRemainder.firstChild) && (!!paramFragRemainder.firstChild.nodeType == 1) ){ // ELEMENT_NODE
+
+				var strText = paramFragRemainder.firstChild.nodeValue;
+				strText = strText.replace(/\s/g, '') || ''; // remove spaces
+
+				if(strText.length >  0){ // test if text node was only spaces, no text
+					
+					var nodeText = d.createTextNode(paramFragRemainder.firstChild.nodeValue);
+					
+					paramNodeFromDocFrag.appendChild(nodeText);
+				}
+				if(paramFragRemainder.childNodes.length > 1){ // recursion involk that.parseChildren
+
+				}
+
+
+			}
+		},
 		parseFrag:function(fragRemainder){ // TODO: should be recursive. If no children return, else call itself
 			var that = this;
 			// first iteration is node fragment. We don't need to append this node. Only it's siblings. A fragment node may have a sibling
@@ -98,8 +121,11 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 
 			if(!!node){
 				var frag = that.getDocumentFragment();
-				var nodeTextDelete = d.createTextNode('Hello World');
-				node.appendChild(nodeTextDelete);
+				// TODO: test if node has children. If it does send node to parseChildren
+				// TODO: test if node has text. If it does append text to node via createTextNode
+				if( !!fragRemainder.hasChildNodes() ){
+					that.parseChildren(fragRemainder, node);
+				}
 				frag.appendChild(node);
 			}
 
