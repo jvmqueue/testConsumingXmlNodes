@@ -98,11 +98,9 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 
 			if(!!node){
 				var frag = that.getDocumentFragment();
+				var nodeTextDelete = d.createTextNode('Hello World');
+				node.appendChild(nodeTextDelete);
 				frag.appendChild(node);
-				console.group('PARSE FRAG');
-					console.log('node:\t', node);
-					console.log('frag:\t', frag);
-				console.groupEnd();	
 			}
 
 			
@@ -117,6 +115,8 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 		build:function(){
 			var that = this; // scoping
 			that.parseFrag(that.getHtmlFrag());
+			var nodeExist = d.getElementById('container');
+			nodeExist.appendChild(that.getDocumentFragment());
 		}
 	};
 
