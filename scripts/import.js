@@ -60,6 +60,7 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 	var Html = function(){
 		var htmlFrag = null;
 		var htmlIdToAppend = null;
+		var documentFrag = d.createDocumentFragment();
 		this.setHtmlFrag = function(paramFrag){
 			htmlFrag = paramFrag;
 		};
@@ -67,12 +68,13 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 			return htmlFrag;
 		};
 		this.setHtmlIdToAppend = function(){
-
 			htmlIdToAppend = this.getHtmlFrag().getAttribute('appendTo');
-
 		};
 		this.getHtmlIdToAppend = function(){
 			return htmlIdToAppend;
+		};
+		this.getDocumentFragment = function(){
+			return documentFrag;
 		};
 	};
 	Html.prototype = {
@@ -87,42 +89,34 @@ jvm['import'] = (function(w, d, $){ // use associative array notation, because I
 			this.build();
 			
 		},
-		appendToAParent:function(paramFragRemainder, paramNode){ // TODO: should be recursive. If no children return, else call itself
-			var node = paramNode
-			var fragXmlRemainder = paramFragRemainder;
-			var nodeNew = null;
-			var nodeText = null;
+		parseFrag:function(fragRemainder){ // TODO: should be recursive. If no children return, else call itself
+			var that = this;
+			// first iteration is node fragment. We don't need to append this node. Only it's siblings. A fragment node may have a sibling
+			var node = null;
 
-			$(fragXmlRemainder.childNodes).each(function(index, elm){
-				if(this.nodeType == 1){
-					nodeNew = d.createElement(this.nodeName);
-					nodeText = d.createTextNode(this.firstChild.nodeValue);
-					nodeNew.appendChild(nodeText);
-					node.appendChild(nodeNew);
-				}
-			});			
+			fragRemainder.nodeType == 1 ? node = d.createElement(fragRemainder.nodeName) : '';
+
+			if(!!node){
+				var frag = that.getDocumentFragment();
+				frag.appendChild(node);
+				console.group('PARSE FRAG');
+					console.log('node:\t', node);
+					console.log('frag:\t', frag);
+				console.groupEnd();	
+			}
+
+			
+
+			if(!!fragRemainder.nextSibling){
+				that.parseFrag(fragRemainder.nextSibling);
+			}else{
+				return false;
+			}
+
 		},
 		build:function(){
 			var that = this; // scoping
-			var node = null;
-			// TODO: use our Html privalged methods to build an HTML fragment from XML
-			var frag = this.getHtmlFrag();
-			var fragmentToAppend = d.createDocumentFragment();
-			$(frag.childNodes).each(function(index, elm){
-				if(this.nodeType == 1){
-					node = d.createElement(this.nodeName);
-					node.setAttribute('class', this.getAttribute('class'));
-					// TODO: test if has children, append children to node
-					that.appendToAParent(this, node);
-
-				}
-				
-			});
-			fragmentToAppend.appendChild(node);
-			var nodeExist = d.getElementById('container');
-			nodeExist.appendChild(fragmentToAppend);
-
-
+			that.parseFrag(that.getHtmlFrag());
 		}
 	};
 
